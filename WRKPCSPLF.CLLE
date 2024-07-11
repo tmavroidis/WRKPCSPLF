@@ -1,0 +1,45 @@
+/*-                                                                            +
+ * GNU General Public License v3.0                                                                             +
+ * THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS'' AND      +
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE       +
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE  +
+ * ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE     +
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL  +
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS     +
+ * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)       +
+ * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT  +
+ * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY   +
+ * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF      +
+ * SUCH DAMAGE.                                                                +
+ *                                                                             +
+ *  PROGRAM WRKPCSPLF / Author Tom Mavroidis / May 10, 2024                    +
+ *  Call the ACS "printer output" listing from the command line                +
+ *  use <call wrkpcsplf>                                                       +
+ *                                                                             +
+ *  ACS should already be installed for all users on the P/C                   +
+ *     otherwise the acslaunch_win-64.exe may be in a different directory      +
+ *                                                                             +
+ */
+
+             pgm
+             dcl        &pccmd  *char 200
+             dcl        &sysname *char 10
+             dcl        &msgid *char 10
+             dcl        &ipadr *char 15
+             dcl        &data *char 50
+
+             strpco
+             monmsg     IWS4010
+             RTVNETA    SYSNAME(&SYSNAME)
+             ping       &sysname
+             CHGVAR     VAR(&MSGID) VALUE(TCP3203)
+             RCVMSG     MSGQ(*PGMQ) MSGTYPE(*INFO) MSGDTA(&DATA) MSGID(&msgid)
+             CHGVAR     &IPADR %sst(&data 25 15)
+             CHGVAR     VAR(&PCCMD) +
+                          VALUE('C:\Users\Public\IBM\ClientSolutions\Start_P+
+                          rograms\Windows_x86-64\acslaunch_win-64.exe +
+                          /PLUGIN=splf  /SYSTEM=' *CAT &ipadr *tCAT ' ')
+             STRPCCMD   &pccmd
+
+             endpgm
+ 
